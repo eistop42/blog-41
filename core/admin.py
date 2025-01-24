@@ -1,5 +1,7 @@
 from django.contrib import admin
 
-from .models import Post
+from .models import Post, Feedback, PostCategory
 
 admin.site.register(Post)
+admin.site.register(Feedback)
+admin.site.register(PostCategory)

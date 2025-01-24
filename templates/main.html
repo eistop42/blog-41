@@ -8,7 +8,9 @@
         <div class="col-10 mb-4">
             <div class="card">
                 <div class="card-header">
-
+                    {% if post.category %}
+                         {{ post.category }}
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ post.title }}</h5>
@@ -20,7 +22,14 @@
         {% endfor %}
 
     </div>
-    <div class="col-sm-2"><h2>Фильтры</h2></div>
+    <div class="col-sm-2">
+        <h2>Категории</h2>
+        {% for category in categories %}
+
+        <p><b><a href="?category={{ category.id }}">{{ category.title }}</a></b></p>
+        {% endfor %}
+
+    </div>
 </div>
 
 {% endblock %}

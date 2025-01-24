@@ -4,13 +4,9 @@
 
 <div class="row mt-4">
     <div class="col-sm-5">
-        <h2>Добавить запись</h2>
-        <form method="post" action="{% url 'post_add' %}">
+        <h2>Обратная связь</h2>
+        <form method="post" action="{% url 'feedback' %}">
             {% csrf_token %}
-            <div class="mb-3">
-                <label for="title" class="form-label">Заголовок</label>
-                <input type="text" class="form-control" id="title" name="title">
-            </div>
             <div class="mb-3">
                 <label for="text" class="form-label">Текст</label>
                 <textarea  class="form-control" id="text" name="text"></textarea>
