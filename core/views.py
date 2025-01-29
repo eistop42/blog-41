@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 
 from django.http import HttpResponse
+from django.db.models import Count
 
 from .models import Post, Feedback, PostCategory
 
@@ -15,7 +16,8 @@ def main(request):
         posts = posts.filter(category__id=category)
         active_category = PostCategory.objects.get(id=category)
 
-    categories = PostCategory.objects.all()
+    categories = PostCategory.objects.annotate(total_posts=Count('post'))
+
 
     return render(request, 'main.html', {'posts': posts,
                                          'categories': categories,
@@ -31,10 +33,13 @@ def post_detail(request, post_id):
 
 def post_add(request):
     if request.method == 'POST':
+        print(request.POST)
         title = request.POST.get('title')
         text = request.POST.get('text')
+        category = request.POST.get('category')
+        category = PostCategory.objects.get(id=category)
 
-        Post.objects.create(title=title, text=text)
+        Post.objects.create(title=title, text=text, category=category)
 
         return redirect('main')
 
