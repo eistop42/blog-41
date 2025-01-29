@@ -26,7 +26,7 @@
         <h2>Категории</h2>
         {% for category in categories %}
 
-        <p><b><a href="?category={{ category.id }}">{{ category.title }}</a></b></p>
+            <p><a {% if category.id == active_category.id %} class="active-link" {% endif %} href="?category={{ category.id }}">{{ category.title }}</a></p>
         {% endfor %}
 
     </div>

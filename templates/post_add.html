@@ -15,6 +15,14 @@
                 <label for="text" class="form-label">Текст</label>
                 <textarea  class="form-control" id="text" name="text"></textarea>
             </div>
+            <div class="mb-3">
+                <label for="category">Выберите категорию:</label>
+                <select name="category" id="category">
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" >{{ category.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary">Добавить</button>
         </form>
 
