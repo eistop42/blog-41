@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.db.models import Count
 
 from .models import Post, Feedback, PostCategory
+from .forms import PostAddForm
 
 
 def main(request):
@@ -32,20 +33,32 @@ def post_detail(request, post_id):
 
 
 def post_add(request):
+
+    post_form = PostAddForm()
+
     if request.method == 'POST':
         print(request.POST)
-        title = request.POST.get('title')
-        text = request.POST.get('text')
-        category = request.POST.get('category')
-        category = PostCategory.objects.get(id=category)
+        # title = request.POST.get('title')
+        # text = request.POST.get('text')
+        # category = request.POST.get('category')
+        # category = PostCategory.objects.get(id=category)
 
-        Post.objects.create(title=title, text=text, category=category)
+        # Post.objects.create(title=title, text=text, category=category)
+        post_form = PostAddForm(request.POST)
+        if post_form.is_valid():
+            title = post_form.cleaned_data['title']
+            text = post_form.cleaned_data['text']
+            category = post_form.cleaned_data['category']
 
-        return redirect('main')
+            post = Post(title=title, text=text, category=category)
+            post.save()
+
+            return redirect('main')
 
     categories = PostCategory.objects.all()
 
-    return render(request, 'post_add.html', {'categories': categories})
+
+    return render(request, 'post_add.html', {'categories': categories, 'form': post_form})
 
 
 def feedback(request):
