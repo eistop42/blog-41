@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db.models import Count
 
-from .models import Post, Feedback, PostCategory
-
+from .models import Post, Feedback, PostCategory, PostComment
+from .forms import LoginForm, PostAddForm, FeedbackForm
 
 def main(request):
     posts = Post.objects.all()
@@ -16,12 +16,14 @@ def main(request):
         posts = posts.filter(category__id=category)
         active_category = PostCategory.objects.get(id=category)
 
-    categories = PostCategory.objects.annotate(total_posts=Count('post'))
+    login_form = LoginForm()
 
+    categories = PostCategory.objects.annotate(total_posts=Count('post'))
 
     return render(request, 'main.html', {'posts': posts,
                                          'categories': categories,
-                                         'active_category': active_category
+                                         'active_category': active_category,
+                                         'login_form': login_form
                                          })
 
 
@@ -31,7 +33,18 @@ def post_detail(request, post_id):
     return render(request, 'post_detail.html', {'post': post})
 
 
-def post_add(request):
+def comment_add(request, post_id):
+
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        post = Post.objects.get(id=post_id)
+
+        PostComment.objects.create(title=title, post=post)
+
+        return redirect('post_detail', post_id)
+
+def post_add_old(request):
+    error = ''
     if request.method == 'POST':
         print(request.POST)
         title = request.POST.get('title')
@@ -39,16 +52,38 @@ def post_add(request):
         category = request.POST.get('category')
         category = PostCategory.objects.get(id=category)
 
-        Post.objects.create(title=title, text=text, category=category)
+        if title != '':
 
-        return redirect('main')
+            Post.objects.create(title=title, text=text, category=category)
+
+            return redirect('main')
+        else:
+            error = 'Ошибка. Пустой заголовок'
 
     categories = PostCategory.objects.all()
 
-    return render(request, 'post_add.html', {'categories': categories})
+    return render(request, 'post_add.html', {'categories': categories, 'error': error})
+
+
+def post_add(request):
+
+    post_form = PostAddForm()
+
+    if request.method == 'POST':
+        post_form = PostAddForm(request.POST)
+
+        if post_form.is_valid():
+            data = post_form.cleaned_data
+
+            Post.objects.create(title=data['title'], category=data['category'], text=data['text'])
+            return redirect('main')
+
+    return render(request, 'post_add.html', {'post_form': post_form})
 
 
 def feedback(request):
+
+    form = FeedbackForm()
     if request.method == 'POST':
         print(request.POST)
 
@@ -58,7 +93,7 @@ def feedback(request):
 
         return redirect('feedback_success')
 
-    return render(request, 'feedback.html', )
+    return render(request, 'feedback.html', {'form': form} )
 
 
 def feedback_success(request):

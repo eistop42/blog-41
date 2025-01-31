@@ -9,7 +9,7 @@
         <p> {{ post.created_date }}</p>
 
         <b>Добавить комменатрий</b>
-        <form method="post" action="{% url 'post_add' %}">
+        <form method="post" action="{% url 'comment_add' post.id %}">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="title" class="form-label">Текст</label>
