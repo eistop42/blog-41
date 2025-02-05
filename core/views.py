@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.db.models import Count
 
 from .models import Post, Feedback, PostCategory, PostComment
-from .forms import LoginForm, PostAddForm, FeedbackForm, CommentAddForm
+from .forms import LoginForm, PostAddForm, FeedbackForm, CommentAddForm, PostAddModelForm
 
 def main(request):
     posts = Post.objects.all()
@@ -32,25 +32,18 @@ def post_detail(request, post_id):
     form = CommentAddForm()
 
     if request.method == 'POST':
-        title = request.POST.get('title')
-        post = Post.objects.get(id=post_id, )
 
-        PostComment.objects.create(title=title, post=post)
+        form = CommentAddForm(request.POST)
 
-        return redirect('post_detail', post_id)
+        if form.is_valid():
+            title = form.cleaned_data['title']
+
+            post = Post.objects.get(id=post_id)
+            PostComment.objects.create(title=title, post=post)
+
+            return redirect('post_detail', post_id)
 
     return render(request, 'post_detail.html', {'post': post, 'form': form})
-
-
-# def comment_add(request, post_id):
-#
-#     if request.method == 'POST':
-#         title = request.POST.get('title')
-#         post = Post.objects.get(id=post_id, )
-#
-#         PostComment.objects.create(title=title, post=post)
-#
-#         return redirect('post_detail', post_id)
 
 
 def post_add_old(request):
@@ -77,15 +70,14 @@ def post_add_old(request):
 
 def post_add(request):
 
-    post_form = PostAddForm()
+    post_form = PostAddModelForm()
 
     if request.method == 'POST':
-        post_form = PostAddForm(request.POST)
+        post_form = PostAddModelForm(request.POST)
 
         if post_form.is_valid():
-            data = post_form.cleaned_data
 
-            Post.objects.create(title=data['title'], category=data['category'], text=data['text'])
+            post_form.save()
             return redirect('main')
 
     return render(request, 'post_add.html', {'post_form': post_form})

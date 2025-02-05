@@ -1,11 +1,18 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import PostCategory
+from .models import PostCategory, Post
 
 class LoginForm(forms.Form):
     login = forms.CharField(label='Логин')
     password = forms.CharField(label='Пароль')
+
+
+
+class PostAddModelForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = '__all__'
 
 
 class PostAddForm(forms.Form):
@@ -30,3 +37,10 @@ class FeedbackForm(forms.Form):
 
 class CommentAddForm(forms.Form):
     title = forms.CharField(widget=forms.Textarea)
+
+
+    def clean_title(self):
+        title = self.cleaned_data['title']
+        if len(title) > 15:
+            raise ValidationError('Длина должна быть не больше 15')
+        return title
