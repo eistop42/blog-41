@@ -10,5 +10,5 @@ urlpatterns = [
     path('feedback', views.feedback, name='feedback'),
     path('feedback/success', views.feedback_success, name='feedback_success'),
 
-    path('posts/<int:post_id>/comments', views.comment_add, name='comment_add')
+    # path('posts/<int:post_id>/comments', views.comment_add, name='comment_add')
 ]

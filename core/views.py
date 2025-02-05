@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.db.models import Count
 
 from .models import Post, Feedback, PostCategory, PostComment
-from .forms import LoginForm, PostAddForm, FeedbackForm
+from .forms import LoginForm, PostAddForm, FeedbackForm, CommentAddForm
 
 def main(request):
     posts = Post.objects.all()
@@ -29,19 +29,29 @@ def main(request):
 
 def post_detail(request, post_id):
     post = Post.objects.get(id=post_id)
-
-    return render(request, 'post_detail.html', {'post': post})
-
-
-def comment_add(request, post_id):
+    form = CommentAddForm()
 
     if request.method == 'POST':
         title = request.POST.get('title')
-        post = Post.objects.get(id=post_id)
+        post = Post.objects.get(id=post_id, )
 
         PostComment.objects.create(title=title, post=post)
 
         return redirect('post_detail', post_id)
+
+    return render(request, 'post_detail.html', {'post': post, 'form': form})
+
+
+# def comment_add(request, post_id):
+#
+#     if request.method == 'POST':
+#         title = request.POST.get('title')
+#         post = Post.objects.get(id=post_id, )
+#
+#         PostComment.objects.create(title=title, post=post)
+#
+#         return redirect('post_detail', post_id)
+
 
 def post_add_old(request):
     error = ''
@@ -85,13 +95,13 @@ def feedback(request):
 
     form = FeedbackForm()
     if request.method == 'POST':
-        print(request.POST)
 
-        text = request.POST.get('text')
+        form = FeedbackForm(request.POST)
 
-        Feedback.objects.create(text=text)
-
-        return redirect('feedback_success')
+        if form.is_valid():
+            text = form.cleaned_data['text']
+            Feedback.objects.create(text=text)
+            return redirect('feedback_success')
 
     return render(request, 'feedback.html', {'form': form} )
 
