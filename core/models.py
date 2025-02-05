@@ -16,6 +16,7 @@ class PostCategory(models.Model):
 class Post(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     text = models.TextField(max_length=255, verbose_name='Текст')
+    image = models.ImageField(null=True, blank=True, upload_to = "images/")
     created_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     category = models.ForeignKey(PostCategory, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Категория')
 

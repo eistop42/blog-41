@@ -5,12 +5,13 @@ from crispy_forms.layout import Submit
 
 
 
-from .models import PostCategory
+from .models import PostCategory, PostComment
 
 class PostAddForm(forms.Form):
     title = forms.CharField()
     text = forms.CharField(widget=forms.Textarea)
     category = forms.ModelChoiceField(queryset=PostCategory.objects.all())
+    image = forms.ImageField()
 
 
 
@@ -27,3 +28,7 @@ class PostAddForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_action = 'post_add'
         self.helper.add_input(Submit('submit', 'Добавить'))
+
+
+class PostCommentForm(forms.Form):
+    title = forms.CharField(widget=forms.Textarea)

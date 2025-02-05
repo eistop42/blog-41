@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db.models import Count
 
-from .models import Post, Feedback, PostCategory
-from .forms import PostAddForm
+from .models import Post, Feedback, PostCategory, PostComment
+from .forms import PostAddForm, PostCommentForm
 
 
 def main(request):
@@ -27,9 +27,16 @@ def main(request):
 
 
 def post_detail(request, post_id):
+    form = PostCommentForm()
     post = Post.objects.get(id=post_id)
 
-    return render(request, 'post_detail.html', {'post': post})
+    if request.method == 'POST':
+        form = PostCommentForm(request.POST)
+        if form.is_valid():
+            PostComment.objects.create(title=form.cleaned_data['title'], post=post)
+            return redirect('post_detail', post_id)
+
+    return render(request, 'post_detail.html', {'post': post, 'form': form})
 
 
 def post_add(request):
@@ -44,13 +51,14 @@ def post_add(request):
         # category = PostCategory.objects.get(id=category)
 
         # Post.objects.create(title=title, text=text, category=category)
-        post_form = PostAddForm(request.POST)
+        post_form = PostAddForm(request.POST, request.FILES)
         if post_form.is_valid():
             title = post_form.cleaned_data['title']
             text = post_form.cleaned_data['text']
             category = post_form.cleaned_data['category']
+            image = post_form.cleaned_data['image']
 
-            post = Post(title=title, text=text, category=category)
+            post = Post(title=title, text=text, category=category, image=image)
             post.save()
 
             return redirect('main')
