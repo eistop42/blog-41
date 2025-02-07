@@ -73,7 +73,11 @@ def post_add(request):
     post_form = PostAddModelForm()
 
     if request.method == 'POST':
-        post_form = PostAddModelForm(request.POST)
+        # print(request.FILE)
+        # print(request.FILES)
+        print(request.FILES)
+        print(request.POST)
+        post_form = PostAddModelForm(request.POST, request.FILES)
 
         if post_form.is_valid():
 

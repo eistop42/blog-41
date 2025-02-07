@@ -18,6 +18,7 @@ class Post(models.Model):
     text = models.TextField(max_length=255, verbose_name='Текст')
     created_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     category = models.ForeignKey(PostCategory, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Категория')
+    image = models.ImageField(upload_to='images', verbose_name='Картинка', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Пост'

@@ -6,7 +6,7 @@
 <div class="row mt-4">
     <div class="col-sm-5">
         <h2>Добавить запись</h2>
-        <form method="post" action="{% url 'post_add' %}">
+        <form enctype="multipart/form-data" method="post" action="{% url 'post_add' %}">
             {% csrf_token %}
             {{ post_form|crispy }}
             <button type="submit" class="btn btn-primary">Добавить</button>

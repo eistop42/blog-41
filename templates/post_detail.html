@@ -9,8 +9,12 @@
         <p>{{ post.text }}</p>
         <p> {{ post.created_date }}</p>
 
-        <b>Добавить комменатрий</b>
-        <form method="post" action="{% url 'post_detail' post.id %}">
+        {% if post.image %}
+        <br><img src="{{ post.image.url }}" style="width:50%">
+        {% endif %}
+
+        <br><b>Добавить комменатрий</b>
+        <form method="post" enctype="multipart/form-data" action="{% url 'post_detail' post.id %}">
             {% csrf_token %}
             {{ form|crispy }}
             <button type="submit" class="btn btn-primary">Добавить</button>
