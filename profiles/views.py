@@ -25,6 +25,12 @@ def login(request):
 def register(request):
 
     form = RegisterForm()
-    # проверка валидности формы
+
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+
+            return redirect('profiles_home')
+        # проверка валидности формы
 
     return render(request, 'profiles/register.html', {'form': form})

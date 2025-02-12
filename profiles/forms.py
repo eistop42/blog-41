@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from django.core.exceptions import ValidationError
 
 class LoginForm(forms.Form):
@@ -36,3 +36,11 @@ class RegisterForm(forms.Form):
 
         if password1 != password2:
             raise ValidationError('Пароли не совпадают!')
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        User = get_user_model()
+
+        if User.objects.filter(username=username).exists():
+            raise ValidationError('такой пользователь уже есть')
+        return username
