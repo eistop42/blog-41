@@ -9,7 +9,7 @@
         <form  method="post" action="{% url 'profiles_register' %}">
             {% csrf_token %}
             {{ form|crispy }}
-            <button type="submit" class="btn btn-primary">Войти</button>
+            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
         </form>
         <a href="/">Назад</a>
     </div>

@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import login as auth_login, get_user_model, authenticate, logout as auth_logout
+
+from .models import Profile
 
 from .forms import LoginForm, RegisterForm
 def home(request):
@@ -29,8 +31,29 @@ def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+
+            # создали пользователя
+            User = get_user_model()
+            user = User.objects.create(username=username)
+            user.set_password(password)
+            user.save()
+
+            # создать Profile
+            Profile.objects.create(user=user)
+
+            # залогинить
+            user = authenticate(request, username=username, password=password)
+            auth_login(request, user)
 
             return redirect('profiles_home')
+
         # проверка валидности формы
 
     return render(request, 'profiles/register.html', {'form': form})
+
+
+def logout(request):
+    auth_logout(request)
+    return redirect('main')

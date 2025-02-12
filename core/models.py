@@ -1,5 +1,6 @@
 from django.db import models
 
+from profiles.models import Profile
 
 
 class PostCategory(models.Model):
@@ -52,3 +53,17 @@ class Feedback(models.Model):
 
     def __str__(self):
         return self.text
+
+
+class PostLike(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_likes')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='profile_likes')
+    is_liked = models.BooleanField(default=True)
+
+
+    class Meta:
+        verbose_name = 'Лайк'
+        verbose_name_plural = 'Лайки'
+
+    def __str__(self):
+        return f'{self.post}-{self.profile}'

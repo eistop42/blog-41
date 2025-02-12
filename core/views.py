@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 
 from django.http import HttpResponse
 from django.db.models import Count
+from django.contrib.auth.decorators import login_required
 
-from .models import Post, Feedback, PostCategory, PostComment
+from .models import Post, Feedback, PostCategory, PostComment, PostLike
 from .forms import LoginForm, PostAddForm, FeedbackForm, CommentAddForm, PostAddModelForm
 
 def main(request):
@@ -33,6 +34,11 @@ def post_detail(request, post_id):
     post = Post.objects.get(id=post_id)
     form = CommentAddForm()
 
+    like = None
+    if request.user.is_authenticated:
+        profile = request.user.profile
+        like = PostLike.objects.filter(post=post, profile=profile).first()
+
     if request.method == 'POST':
 
         form = CommentAddForm(request.POST)
@@ -45,7 +51,7 @@ def post_detail(request, post_id):
 
             return redirect('post_detail', post_id)
 
-    return render(request, 'post_detail.html', {'post': post, 'form': form})
+    return render(request, 'post_detail.html', {'post': post, 'form': form, 'like': like})
 
 
 def post_add_old(request):
@@ -106,3 +112,14 @@ def feedback(request):
 
 def feedback_success(request):
     return render(request, 'feedback_success.html', )
+
+
+@login_required
+def post_like(request, post_id):
+
+    user = request.user
+    post = Post.objects.get(id=post_id)
+
+    PostLike.objects.get_or_create(post=post, profile=user.profile)
+
+    return redirect('post_detail', post_id)
