@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login
 
-from .forms import LoginForm
+from .forms import LoginForm, RegisterForm
 def home(request):
 
     return render(request, 'profiles/home.html')
@@ -20,3 +20,11 @@ def login(request):
             return redirect('profiles_home')
 
     return render(request, 'profiles/login.html', {'form': form})
+
+
+def register(request):
+
+    form = RegisterForm()
+    # проверка валидности формы
+
+    return render(request, 'profiles/register.html', {'form': form})

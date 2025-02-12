@@ -12,6 +12,8 @@ def main(request):
     category = request.GET.get('category')
     active_category = None
 
+    print(request.session.keys())
+
     if category:
         posts = posts.filter(category__id=category)
         active_category = PostCategory.objects.get(id=category)

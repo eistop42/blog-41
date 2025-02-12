@@ -4,14 +4,14 @@
 {% block content %}
 
 <div class="row mt-4">
+    <h2>Регистрация</h2>
     <div class="col-sm-5">
-        <form  method="post" action="{% url 'profiles_login' %}">
+        <form  method="post" action="{% url 'profiles_register' %}">
             {% csrf_token %}
             {{ form|crispy }}
             <button type="submit" class="btn btn-primary">Войти</button>
         </form>
-        <br><a href="{% url 'profiles_register' %}">Регистрация</a>
-        <br><a href="/">Назад</a>
+        <a href="/">Назад</a>
     </div>
 
 </div>
