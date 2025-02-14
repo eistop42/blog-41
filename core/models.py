@@ -18,8 +18,10 @@ class Post(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     text = models.TextField(max_length=255, verbose_name='Текст')
     created_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
-    category = models.ForeignKey(PostCategory, blank=True, null=True, on_delete=models.SET_NULL, verbose_name='Категория')
+    category = models.ForeignKey(PostCategory, blank=True, null=True, on_delete=models.SET_NULL,
+                                 verbose_name='Категория')
     image = models.ImageField(upload_to='images', verbose_name='Картинка', blank=True, null=True)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='profile_posts', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Пост'
@@ -33,6 +35,8 @@ class Post(models.Model):
 class PostComment(models.Model):
     title = models.CharField(max_length=500, verbose_name='Комментарий')
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_comments')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='profile_comments',
+                                blank=True, null=True)
 
     class Meta:
         verbose_name = 'Комментарий'
@@ -59,7 +63,6 @@ class PostLike(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_likes')
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='profile_likes')
     is_liked = models.BooleanField(default=True)
-
 
     class Meta:
         verbose_name = 'Лайк'

@@ -12,6 +12,9 @@
                     {% if post.category %}
                          {{ post.category }}
                     {% endif %}
+                            {% if post.profile %}
+        <p>Автор: {{ post.profile.user.username }}</p>
+        {% endif %}
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">{{ post.title }}</h5>

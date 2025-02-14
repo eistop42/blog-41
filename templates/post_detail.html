@@ -8,6 +8,10 @@
         <h2>{{ post.title }}</h2>
         <p>{{ post.text }}</p>
         <p> {{ post.created_date }}</p>
+        <p>Лайки: {{ likes }}</p>
+        {% if post.profile %}
+        <p>Автор: {{ post.profile.user.username }}</p>
+        {% endif %}
 
         {% if post.image %}
         <br><img src="{{ post.image.url }}" style="width:50%">
@@ -18,22 +22,30 @@
         {% if not like.is_liked %}
         <br><a class="btn btn-primary mt-2" role="button" href="{% url 'post_like' post.id %}">Лайк</a>
         {% else %}
-        <br><a class="btn btn-primary mt-2" role="button" href="{% url 'post_like' post.id %}">Снять лайк</a>
+        <br><a class="btn btn-primary mt-2" role="button" href="{% url 'post_unlike' post.id %}">Снять лайк</a>
         {% endif %}
 
         {% endif %}
 
+        {% if request.user.is_authenticated %}
         <br><b>Добавить комменатрий</b>
         <form method="post" enctype="multipart/form-data" action="{% url 'post_detail' post.id %}">
             {% csrf_token %}
             {{ form|crispy }}
             <button type="submit" class="btn btn-primary">Добавить</button>
         </form>
+        {% endif %}
 
-        <b>Комментарии</b>
+        <b>Комментарии ({{ comments }})</b>
 
         {% for comment in post.post_comments.all %}
-        <p> {{ comment.title }}</p>
+        <p> {{ comment.title }} ({{ comment.profile.user.username }})
+
+            {% if request.user.profile == comment.profile %}
+            <a href="{% url 'comment_delete' post.id comment.id %}">Удалить</a>
+
+            {% endif %}
+        </p>
         {% endfor %}
 
     </div>
