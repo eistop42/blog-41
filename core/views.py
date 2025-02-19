@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 
-from django.http import HttpResponse
+from django.http import Http404
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 
@@ -38,6 +38,7 @@ def post_detail(request, post_id):
 
     likes = PostLike.objects.filter(post=post, is_liked=True).count()
     comments = PostComment.objects.filter(post=post).count()
+
     if request.user.is_authenticated:
         profile = request.user.profile
         like = PostLike.objects.filter(post=post, profile=profile).first()
@@ -157,6 +158,9 @@ def post_unlike(request, post_id):
 @login_required
 def comment_delete(request, post_id, comment_id):
     profile = request.user.profile
+
+    if not PostComment.objects.filter(profile=profile, id=comment_id).exists():
+        raise Http404
 
     PostComment.objects.filter(profile=profile, id=comment_id).delete()
 

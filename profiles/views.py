@@ -1,12 +1,20 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login, get_user_model, authenticate, logout as auth_logout
-
+from django.contrib.auth.decorators import login_required
 from .models import Profile
 
+from core.models import Post
+
 from .forms import LoginForm, RegisterForm
+
+@login_required
 def home(request):
 
-    return render(request, 'profiles/home.html')
+    # posts = Post.objects.fitler(profile=request.user.profile)
+    posts = request.user.profile.profile_posts.all()
+
+    print(posts)
+    return render(request, 'profiles/home.html', {'posts': posts})
 
 
 def login(request):

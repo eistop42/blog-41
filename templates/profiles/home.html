@@ -5,13 +5,16 @@
 
 <div class="row mt-4">
     <div class="col-sm-5">
-        {% if request.user.is_authenticated %}
+
         <h2>Личный кабинет</h2>
         <p>{{ request.user.username }}</p>
         <p> {{ request.user.profile.bio }}</p>
-        {% else %}
-        <p>Вам нам нужно авторизоваться или зарегистрироваться</p>
-        {% endif %}
+
+        <h3>Ваши публикации</h3>
+        {% for post in posts %}
+         <br>{{ post.title }}
+        {% endfor %}
+
     </div>
 
 </div>
