@@ -7,7 +7,7 @@
         <div class="col-8">
         <form class="row  mb-3" action="{% url 'post_search' %}">
             <div class="col-auto">
-                <input value="" name="text" class="form-control" placeholder="найти запись">
+                <input value="{{ text }}" name="text" class="form-control" placeholder="найти запись">
             </div>
             <div class="col-auto">
                 <button class="btn btn-primary" >найти</button>
@@ -35,14 +35,7 @@
         {% endfor %}
 
     </div>
-    <div class="col-sm-2">
-        <h2>Категории</h2>
-        {% for category in categories %}
 
-            <p><a {% if category.id == active_category.id %} class="active-link" {% endif %} href="?category={{ category.id }}">{{ category.title }} ({{ category.total_posts }})</a></p>
-        {% endfor %}
-
-    </div>
 </div>
 
 {% endblock %}

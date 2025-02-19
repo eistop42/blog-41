@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="row mt-4">
+    <div class="col-sm-5">
+        <h2>Редактировать запись</h2>
+        <form enctype="multipart/form-data" method="post" action="{% url 'post_edit' post_form.instance.id %}">
+            {% csrf_token %}
+            {{ post_form|crispy }}
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+
+        <a href="/">Назад</a>
+
+    </div>
+</div>
+
+{% endblock %}

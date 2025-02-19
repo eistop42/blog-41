@@ -1,4 +1,6 @@
-from django.shortcuts import render, redirect
+
+
+from django.shortcuts import render, redirect, get_object_or_404
 
 from django.http import Http404
 from django.db.models import Count
@@ -28,6 +30,14 @@ def main(request):
                                          'active_category': active_category,
                                          'login_form': login_form
                                          })
+
+def post_search(request):
+
+    text = request.GET.get('text')
+
+    posts = Post.objects.filter(text__icontains=text)
+
+    return render(request, 'post_search.html', {'posts': posts, 'text': text})
 
 
 def post_detail(request, post_id):
@@ -103,6 +113,35 @@ def post_add(request):
             return redirect('main')
 
     return render(request, 'post_add.html', {'post_form': post_form})
+
+@login_required
+def post_edit(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    if not Post.objects.filter(profile=request.user.profile, id=post_id).exists():
+        raise Http404
+
+    post_form = PostAddModelForm(instance=post)
+
+    if request.method == 'POST':
+        post_form = PostAddModelForm(request.POST, request.FILES, instance=post)
+
+        if post_form.is_valid():
+            post_form.save()
+            return redirect('post_detail', post.id)
+
+    return render(request, 'post_edit.html', {'post_form': post_form})
+
+
+@login_required
+def post_delete(request, post_id):
+
+    if not Post.objects.filter(profile=request.user.profile, id=post_id).exists():
+        raise Http404
+
+    post = Post.objects.get(id=post_id)
+    post.delete()
+    return redirect('main')
 
 
 def feedback(request):
