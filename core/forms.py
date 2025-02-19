@@ -45,3 +45,8 @@ class CommentAddForm(forms.Form):
         if len(title) > 15:
             raise ValidationError('Длина должна быть не больше 15')
         return title
+
+
+class PostFilterForm(forms.Form):
+    order = forms.ChoiceField(choices=[('like_desc', 'много лайков'), ('like_asc', 'мало лайков'), ('comment_desc', 'много комментарив')], required=False)
+    category = forms.ModelMultipleChoiceField(queryset=PostCategory.objects.all(), widget=forms.CheckboxSelectMultiple, required=False)
