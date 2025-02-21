@@ -3,10 +3,10 @@ from django.core.exceptions import ValidationError
 
 from .models import PostCategory, Post
 
+
 class LoginForm(forms.Form):
     login = forms.CharField(label='Логин')
     password = forms.CharField(label='Пароль')
-
 
 
 class PostAddModelForm(forms.ModelForm):
@@ -39,9 +39,20 @@ class FeedbackForm(forms.Form):
 class CommentAddForm(forms.Form):
     title = forms.CharField(widget=forms.Textarea)
 
-
     def clean_title(self):
         title = self.cleaned_data['title']
         if len(title) > 15:
             raise ValidationError('Длина должна быть не больше 15')
         return title
+
+
+class PostFilterForm(forms.Form):
+    category = forms.ModelMultipleChoiceField(
+        queryset=PostCategory.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        label='Категории',
+        required=False)
+    order = forms.ChoiceField(
+        choices=[('like_desc', 'много лайков'), ('like_asc', 'мало лайков'), ('new', 'новые'),  ('old', 'старые')],
+        label='Сортировка',
+        required=False)

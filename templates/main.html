@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
@@ -36,12 +37,17 @@
 
     </div>
     <div class="col-sm-2">
-        <h2>Категории</h2>
-        {% for category in categories %}
+<!--        <h2>Категории</h2>-->
+<!--        {% for category in categories %}-->
 
-            <p><a {% if category.id == active_category.id %} class="active-link" {% endif %} href="?category={{ category.id }}">{{ category.title }} ({{ category.total_posts }})</a></p>
-        {% endfor %}
+<!--            <p><a {% if category.id == active_category.id %} class="active-link" {% endif %} href="?category={{ category.id }}">{{ category.title }} ({{ category.total_posts }})</a></p>-->
+<!--        {% endfor %}-->
 
+        <h3>Фильтр</h3>
+        <form>
+            {{post_filter_form|crispy}}
+            <button type="submit">Фильтровать</button>
+        </form>
     </div>
 </div>
 

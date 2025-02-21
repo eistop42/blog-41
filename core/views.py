@@ -2,24 +2,36 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 
-from django.http import Http404
-from django.db.models import Count
+from django.http import Http404, JsonResponse
+from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
 
 from .models import Post, Feedback, PostCategory, PostComment, PostLike
-from .forms import LoginForm, PostAddForm, FeedbackForm, CommentAddForm, PostAddModelForm
+from .forms import LoginForm, PostAddForm, FeedbackForm, CommentAddForm, PostAddModelForm, PostFilterForm
 
 def main(request):
     posts = Post.objects.all()
 
-    category = request.GET.get('category')
     active_category = None
 
-    print(request.session.keys())
+    post_filter_form = PostFilterForm(request.GET)
 
-    if category:
-        posts = posts.filter(category__id=category)
-        active_category = PostCategory.objects.get(id=category)
+    if post_filter_form.is_valid():
+        category = post_filter_form.cleaned_data['category']
+        order = post_filter_form.cleaned_data['order']
+
+        if category:
+            posts = posts.filter(category__in=category)
+
+        if order == 'like_desc':
+            posts = posts.annotate(likes=Count('post_likes', filter=Q(post_likes__is_liked=True)))
+            posts = posts.order_by('-likes')
+        if order == 'new':
+            posts = posts.order_by('-created_date')
+        if order == 'old':
+            posts = posts.order_by('created_date')
+
+
 
     login_form = LoginForm()
 
@@ -28,14 +40,15 @@ def main(request):
     return render(request, 'main.html', {'posts': posts,
                                          'categories': categories,
                                          'active_category': active_category,
-                                         'login_form': login_form
+                                         'login_form': login_form,
+                                         'post_filter_form': post_filter_form
                                          })
 
 def post_search(request):
 
     text = request.GET.get('text')
 
-    posts = Post.objects.filter(text__icontains=text)
+    posts = Post.objects.filter(Q(text__icontains=text)|Q(title__icontains=text))
 
     return render(request, 'post_search.html', {'posts': posts, 'text': text})
 
@@ -176,7 +189,9 @@ def post_like(request, post_id):
     else:
         PostLike.objects.create(post=post, profile=user.profile)
 
-    return redirect('post_detail', post_id)
+    likes = PostLike.objects.filter(post=post, is_liked=True).count()
+
+    return JsonResponse({'likes': likes})
 
 
 @login_required
