@@ -2,6 +2,7 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 
+from django.template.loader import render_to_string
 from django.http import Http404, JsonResponse
 from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
@@ -78,7 +79,15 @@ def post_detail(request, post_id):
             comment.profile = request.user.profile
             comment.save()
 
-            return redirect('post_detail', post_id)
+            comments_count = PostComment.objects.filter(post=post).count()
+            comments = render_to_string('parts/comment.html', {"post":post, 'comments': comments_count } )
+
+            return JsonResponse({'comments': comments, 'is_valid': True})
+
+        if not form.is_valid():
+            form = render_to_string('parts/comment_form.html', {'form': form, 'post': post})
+
+            return JsonResponse({'form': form, 'is_valid': False})
 
     return render(request, 'post_detail.html', {'post': post, 'form': form, 'like': like, 'likes': likes, "comments": comments})
 
@@ -206,7 +215,9 @@ def post_unlike(request, post_id):
         post_like.is_liked = False
         post_like.save()
 
-    return redirect('post_detail', post_id)
+    likes = PostLike.objects.filter(post=post, is_liked=True).count()
+
+    return JsonResponse({'likes': likes})
 
 
 @login_required
