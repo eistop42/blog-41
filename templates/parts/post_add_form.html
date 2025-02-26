@@ -1,0 +1,11 @@
+{% load crispy_forms_tags %}
+
+
+<h2>Добавить запись</h2>
+<form enctype="multipart/form-data" method="post" hx-post="{% url 'post_add' %}" hx-target="#postForm">
+    {% csrf_token %}
+    {{ post_form|crispy }}
+    <button type="submit" class="btn btn-primary">Добавить</button>
+</form>
+
+<a href="/">Назад</a>

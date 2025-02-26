@@ -2,19 +2,13 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-
-<div class="row mt-4">
+<div class="row mt-4" id="postForm">
     <div class="col-sm-5">
-        <h2>Добавить запись</h2>
-        <form enctype="multipart/form-data" method="post" action="{% url 'post_add' %}">
-            {% csrf_token %}
-            {{ post_form|crispy }}
-            <button type="submit" class="btn btn-primary">Добавить</button>
-        </form>
 
-        <a href="/">Назад</a>
+        {% include 'parts/post_add_form.html' %}}
 
     </div>
 </div>
+
 
 {% endblock %}

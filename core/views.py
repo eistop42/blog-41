@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 
@@ -82,7 +83,12 @@ def post_detail(request, post_id):
             comment.profile = request.user.profile
             comment.save()
 
-            return redirect('post_detail', post_id)
+            comment = render_to_string( 'parts/comment.html', {'comment': comment})
+
+            return JsonResponse({'comment': comment})
+        else:
+            errors = render_to_string( 'parts/comment_form_errors.html', {'form': form})
+            return JsonResponse({"errors": errors}, status=400)
 
     return render(request, 'post_detail.html', {'post': post, 
     'form': form, 'like': like, 'likes': likes, "comments": comments, 'sub': sub})
@@ -128,7 +134,9 @@ def post_add(request):
             post.profile = request.user.profile
             post.save()
 
-            return redirect('main')
+            return render(request, 'parts/post_add_success.html')
+
+        return render(request, 'parts/post_add_form.html', {'post_form': post_form})
 
     return render(request, 'post_add.html', {'post_form': post_form})
 
@@ -163,9 +171,11 @@ def post_like(request, post_id):
         post_like.is_liked = True
         post_like.save()
     else:
-        PostLike.objects.create(post=post, profile=user.profile)
+        post_like = PostLike.objects.create(post=post, profile=user.profile)
 
-    return redirect('post_detail', post_id)
+    likes =  PostLike.objects.filter(post=post, is_liked=True).count()
+
+    return JsonResponse({'likes': likes, 'post_like': post_like.is_liked})
 
 
 @login_required
@@ -179,8 +189,10 @@ def post_unlike(request, post_id):
     if post_like:
         post_like.is_liked = False
         post_like.save()
+    
+    likes =  PostLike.objects.filter(post=post, is_liked=True).count()
 
-    return redirect('post_detail', post_id)
+    return JsonResponse({'likes': likes, 'post_like': post_like.is_liked})
 
 
 @login_required

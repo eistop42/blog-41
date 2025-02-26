@@ -16,6 +16,15 @@ class PostAddModelForm(forms.ModelForm):
         exclude = ['profile']
 
 
+    def clean_text(self):
+        text = self.cleaned_data['text']
+        words = ['дурак', 'козел']
+        for word in words:
+            if word in text:
+                raise ValidationError('В тексте есть запрещенные слова ⚠')
+        return text
+
+
 class PostAddForm(forms.Form):
     title = forms.CharField(label='Заголовок')
     text = forms.CharField(label='Текст', widget=forms.Textarea)

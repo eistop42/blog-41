@@ -1,0 +1,7 @@
+<p> {{ comment.title }} ({{ comment.profile.user.username }})
+
+    {% if request.user.profile == comment.profile %}
+    <a href="{% url 'comment_delete' post.id comment.id %}">Удалить</a>
+
+    {% endif %}
+</p>
