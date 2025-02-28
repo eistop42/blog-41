@@ -57,7 +57,7 @@ $(".col-sm-6").on('submit', '#commentForm', function(event){
     success: function(data){
         if (data.is_valid === true){
             $('#comments').replaceWith(data.comments)
-            $('#commentForm').trigger('reset')
+            $('#commentForm').replaceWith(data.form)
         }
         else {
             $('#commentForm').replaceWith(data.form)

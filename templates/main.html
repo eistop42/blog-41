@@ -15,7 +15,7 @@
             </div>
         </form>
             </div>
-        {% for post in posts %}
+        {% for post in page_obj %}
         <div class="col-10 mb-4">
             <div class="card">
                 <div class="card-header">
@@ -49,6 +49,30 @@
             <button type="submit">Фильтровать</button>
         </form>
     </div>
+
+   <nav aria-label="...">
+  <ul class="pagination">
+    <li class="page-item {% if not page_obj.has_previous %} disabled {% endif%} ">
+      <a class="page-link" href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{%else%}#{%endif%}">Previous</a>
+    </li>
+      {% if page_obj.has_previous  %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}"</a></li>
+      {% endif %}
+
+    <li class="page-item active" aria-current="page">
+      <a class="page-link" href="#">{{ page_obj.number }}</a>
+    </li>
+
+       {% if page_obj.has_next  %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+      {% endif %}
+
+    <li class="page-item {% if not page_obj.has_next %} disabled {% endif%} ">
+
+      <a class="page-link" href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{%else%}#{%endif%}">Next</a>
+    </li>
+  </ul>
+</nav>
 </div>
 
 {% endblock %}

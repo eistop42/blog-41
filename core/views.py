@@ -2,6 +2,7 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 
+from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 from django.http import Http404, JsonResponse
 from django.db.models import Count, Q
@@ -13,8 +14,9 @@ from .forms import LoginForm, PostAddForm, FeedbackForm, CommentAddForm, PostAdd
 def main(request):
     posts = Post.objects.all()
 
-    active_category = None
+    page_number = request.GET.get('page', 1)
 
+    active_category = None
     post_filter_form = PostFilterForm(request.GET)
 
     if post_filter_form.is_valid():
@@ -33,6 +35,9 @@ def main(request):
             posts = posts.order_by('created_date')
 
 
+    paginator = Paginator(posts, 1)
+    page_obj = paginator.get_page(page_number)
+
 
     login_form = LoginForm()
 
@@ -42,7 +47,8 @@ def main(request):
                                          'categories': categories,
                                          'active_category': active_category,
                                          'login_form': login_form,
-                                         'post_filter_form': post_filter_form
+                                         'post_filter_form': post_filter_form,
+                                         'page_obj': page_obj
                                          })
 
 def post_search(request):
@@ -80,12 +86,14 @@ def post_detail(request, post_id):
             comment.save()
 
             comments_count = PostComment.objects.filter(post=post).count()
-            comments = render_to_string('parts/comment.html', {"post":post, 'comments': comments_count } )
 
-            return JsonResponse({'comments': comments, 'is_valid': True})
+            comments = render_to_string('parts/comment.html', {"post":post, 'comments': comments_count }, request )
+            form = render_to_string('parts/comment_form.html', {'form': CommentAddForm(), 'post': post}, request)
+
+            return JsonResponse({'comments': comments, 'is_valid': True, 'form': form })
 
         if not form.is_valid():
-            form = render_to_string('parts/comment_form.html', {'form': form, 'post': post})
+            form = render_to_string('parts/comment_form.html', {'form': form, 'post': post}, request)
 
             return JsonResponse({'form': form, 'is_valid': False})
 

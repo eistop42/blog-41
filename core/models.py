@@ -41,6 +41,7 @@ class PostComment(models.Model):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+        ordering = ['-pk']
 
     def __str__(self):
         return self.title
