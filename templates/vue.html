@@ -1,0 +1,48 @@
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<div id="app">{{ message }}
+
+    <button @click="showClick">клик</button>
+    <button @click="getPosts">показать посты</button>
+    <li v-if="showBooks" v-for="item in books">
+        {{ item }}
+    </li>
+    <h1>{{ posts }}</h1>
+    
+    <ul>
+    <li v-for="post in posts">
+        [[ post.title ]]
+    </li>
+    </ul>
+</div>
+
+<script>
+  const { createApp } = Vue
+
+  createApp({
+    delimiters: ['[[', ']]'],
+    data() {
+      return {
+        message: 'Hello Vue!',
+        books: ['книга 1', 'книга 2'],
+        showBooks: false,
+        posts: []
+      }
+    },
+    methods: {
+        showClick() {
+            this.showBooks = true
+        },
+        async getPosts(){
+            let url = 'http://127.0.0.1:8000/api/posts'
+
+            const response = await fetch(url)
+            const data = await response.json()
+            console.log(data)
+            this.posts = data
+
+        }
+    }
+  }).mount('#app')
+</script>

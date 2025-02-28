@@ -202,3 +202,9 @@ def comment_delete(request, post_id, comment_id):
     PostComment.objects.filter(profile=profile, id=comment_id).delete()
 
     return redirect('post_detail', post_id)
+
+
+
+def vue(request):
+
+    return render(request, 'vue.html')
