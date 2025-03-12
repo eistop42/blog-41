@@ -41,9 +41,11 @@ INSTALLED_APPS = [
 
     "crispy_forms",
     "crispy_bootstrap5",
+    'rest_framework',
 
     'core',
-    'profiles'
+    'profiles',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -139,3 +141,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 LOGIN_URL = '/profiles/login'
+
+
+# STATIC_ROOT = '/home/c98437/blognew.na4u.ru/www/static'
+# MEDIA_ROOT =  '/home/c98437/blognew.na4u.ru/www/media'

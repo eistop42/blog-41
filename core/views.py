@@ -7,6 +7,10 @@ from django.template.loader import render_to_string
 from django.http import Http404, JsonResponse
 from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
+from django.views import View
+from django.views.generic.base import TemplateView
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Post, Feedback, PostCategory, PostComment, PostLike
 from .forms import LoginForm, PostAddForm, FeedbackForm, CommentAddForm, PostAddModelForm, PostFilterForm
@@ -188,6 +192,25 @@ def feedback(request):
 
     return render(request, 'feedback.html', {'form': form} )
 
+class FeedbackView(View):
+
+
+    def get_form(self):
+        return FeedbackForm()
+
+    def get(self, request):
+        form = self.get_form()
+        return render(request, 'feedback.html', {'form': form})
+
+    def post(self, request):
+        form = FeedbackForm(request.POST)
+
+        if form.is_valid():
+            text = form.cleaned_data['text']
+            Feedback.objects.create(text=text)
+            return redirect('feedback_success')
+
+        return render(request, 'feedback.html', {'form': form})
 
 def feedback_success(request):
     return render(request, 'feedback_success.html', )
@@ -238,3 +261,28 @@ def comment_delete(request, post_id, comment_id):
     PostComment.objects.filter(profile=profile, id=comment_id).delete()
 
     return redirect('post_detail', post_id)
+
+
+def test(request):
+
+    return render(request, 'test.html', )
+
+class TestView(TemplateView):
+    template_name = 'test.html'
+
+    def get_context_data(self):
+        return {'name': 'ilya'}
+
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    fields = ['text', 'title', 'category']
+    template_name = 'post_create_view.html'
+    success_url = '/'
+
+    def form_valid(self, form):
+        self.object = form.save()
+
+        self.object.profile = self.request.user.profile
+        self.object.save()
+
+        return redirect(self.success_url)

@@ -35,6 +35,12 @@ class PostAddForm(forms.Form):
 class FeedbackForm(forms.Form):
     text = forms.CharField(widget=forms.Textarea)
 
+    def clean_text(self):
+        text = self.cleaned_data.get('text')
+
+        if 'дураки' in text:
+            raise ValidationError('сам дурак')
+        return text
 
 class CommentAddForm(forms.Form):
     title = forms.CharField(widget=forms.Textarea)
